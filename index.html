@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VetFeed Pro 2025 — Hệ thống phối trộn thức ăn chăn nuôi</title>
+<style>
+/* ── RESET & BASE ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+input,select,button,textarea{font-family:inherit}
+button{cursor:pointer}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#f1f5f9}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* ── HEADER ── */
+#header{background:linear-gradient(135deg,#064e3b 0%,#0f766e 100%);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+#header-left{display:flex;align-items:center;gap:12px}
+#header-icon{background:rgba(255,255,255,.2);border-radius:12px;padding:8px;display:flex;align-items:center;justify-content:center;font-size:22px}
+#header-title{font-size:18px;font-weight:800;letter-spacing:-.3px}
+#header-time{font-size:11px;color:#6ee7b7;display:flex;align-items:center;gap:4px;margin-top:2px}
+#clock{font-family:monospace;font-weight:700;color:#fde68a}
+#main-nav{display:flex;background:rgba(0,0,0,.2);border-radius:999px;padding:4px;gap:3px;flex-wrap:wrap}
+.nav-btn{background:none;border:none;color:rgba(255,255,255,.8);padding:7px 16px;border-radius:999px;font-size:13px;font-weight:600;transition:all .2s;white-space:nowrap}
+.nav-btn:hover{background:rgba(255,255,255,.1)}
+.nav-btn.active{background:#fff;color:#065f46;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+
+/* ── MAIN ── */
+#main{max-width:1600px;margin:0 auto;padding:16px 12px;width:100%}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* ── CARDS / PANELS ── */
+.card{background:#fff;border-radius:16px;box-shadow:0 1px 6px rgba(0,0,0,.08);border:1px solid #e2e8f0;overflow:hidden}
+.card-header{padding:14px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.card-body{padding:20px}
+.section-title{font-size:17px;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px}
+.sub-title{font-size:13px;font-weight:700;color:#475569;margin-bottom:8px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;border:none;transition:all .18s;white-space:nowrap}
+.btn-green{background:#059669;color:#fff}.btn-green:hover{background:#047857}
+.btn-purple{background:#7c3aed;color:#fff}.btn-purple:hover{background:#6d28d9}
+.btn-blue{background:#2563eb;color:#fff}.btn-blue:hover{background:#1d4ed8}
+.btn-red{background:#dc2626;color:#fff}.btn-red:hover{background:#b91c1c}
+.btn-gray{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}.btn-gray:hover{background:#e2e8f0}
+.btn-outline-green{background:#fff;color:#059669;border:2px dashed #6ee7b7}.btn-outline-green:hover{background:#ecfdf5;border-color:#059669}
+.btn-outline-purple{background:#fff;color:#7c3aed;border:2px dashed #c4b5fd}.btn-outline-purple:hover{background:#f5f3ff;border-color:#7c3aed}
+.btn-outline-blue{background:#fff;color:#2563eb;border:2px dashed #93c5fd}.btn-outline-blue:hover{background:#eff6ff;border-color:#2563eb}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:8px}
+.btn-icon{padding:6px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;color:#64748b}.btn-icon:hover{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
+
+/* ── FORM INPUTS ── */
+.inp{width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:14px;color:#1e293b;outline:none;transition:all .18s;background:#fff}
+.inp:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.15)}
+.inp-mono{font-family:monospace;background:#fffbeb;color:#92400e;border-color:#fde68a}
+.inp-mono:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(217,119,6,.15)}
+.inp-num{text-align:right;font-family:monospace}
+.inp-blue{background:#eff6ff;color:#1d4ed8}.inp-blue:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+
+/* ── TABLES ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{background:#f8fafc;border-bottom:2px solid #e2e8f0;padding:10px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#64748b;white-space:nowrap}
+.tbl td{padding:8px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+.tbl tr:hover td{background:#f0fdf4}
+.tbl tfoot td{background:#1e3a5f;color:#fff;font-weight:700;padding:10px 12px}
+.tbl .text-right{text-align:right}
+.tbl .text-center{text-align:center}
+.tbl .num{font-family:monospace}
+.tbl .kg-col{background:#fefce8;color:#92400e;font-weight:700}
+.tbl .tfoot-sum{background:#065f46}
+
+/* ── GRID ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.formula-layout{display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start}
+@media(max-width:900px){.formula-layout{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-rose{background:#ffe4e6;color:#9f1239}
+.badge-orange{background:#ffedd5;color:#9a3412}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-pink{background:#fce7f3;color:#9d174d}
+.badge-green{background:#dcfce7;color:#14532d}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-purple{background:#f3e8ff;color:#581c87}
+
+/* ── FORMULA LIST ── */
+#formula-list{max-height:46vh;overflow-y:auto;border-top:1px solid #e2e8f0}
+.formula-item{width:100%;text-align:left;background:none;border:none;padding:12px 16px;border-bottom:1px solid #f1f5f9;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:all .18s}
+.formula-item:hover{background:#f0fdf4}
+.formula-item.selected{background:#ecfdf5;border-right:4px solid #059669}
+.formula-item-name{font-size:14px;font-weight:600;color:#1e293b}
+.formula-item.selected .formula-item-name{color:#047857}
+.formula-item-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+
+/* ── BATCH SIZE ── */
+#batch-input{width:100%;border:2px solid #a7f3d0;border-radius:12px;padding:10px;font-size:26px;font-weight:700;color:#065f46;text-align:center;outline:none}
+#batch-input:focus{border-color:#059669;box-shadow:0 0 0 4px rgba(5,150,105,.15)}
+.batch-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.preset-btn{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;border-radius:8px;padding:6px;font-size:12px;font-weight:600;transition:all .18s}
+.preset-btn:hover{background:#ecfdf5;color:#047857}
+.preset-btn.active{background:#059669;color:#fff;border-color:#059669}
+
+/* ── VIEW TOGGLE ── */
+#view-toggle{display:flex;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:4px;gap:3px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.view-btn{background:none;border:none;padding:7px 18px;border-radius:8px;font-size:13px;font-weight:600;color:#64748b;transition:all .18s}
+.view-btn:hover{background:#f1f5f9}
+.view-btn.active{background:#059669;color:#fff;box-shadow:0 2px 6px rgba(5,150,105,.3)}
+
+/* ── PHIẾU TRỘN ── */
+#phieu-header{background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 100%);color:#fff;padding:20px}
+#phieu-title{font-size:22px;font-weight:800;letter-spacing:-.3px}
+#phieu-code{display:inline-block;background:#fbbf24;color:#78350f;padding:2px 10px;border-radius:6px;font-family:monospace;font-weight:700;font-size:12px;margin-right:8px}
+#phieu-meta{font-size:12px;color:#93c5fd;margin-top:4px}
+#phieu-info{text-align:right;color:#93c5fd;font-size:13px;line-height:1.8}
+#batch-display{color:#fde68a;font-size:22px;font-weight:800}
+#nutrients-bar{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.nutr-chip{border-radius:8px;padding:8px 12px;text-align:center;min-width:80px}
+.nutr-chip.ok{background:rgba(5,150,105,.3);border:1px solid rgba(110,231,183,.4)}
+.nutr-chip.bad{background:rgba(220,38,38,.3);border:1px solid rgba(252,165,165,.4)}
+.nutr-chip-label{font-size:9px;font-weight:700;text-transform:uppercase;color:#93c5fd;letter-spacing:.6px}
+.nutr-chip-val{font-size:15px;font-weight:800;color:#fff;line-height:1.2}
+.nutr-chip-std{font-size:9px;color:#93c5fd}
+#ky-ket{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:16px 20px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;font-size:12px;color:#64748b}
+.ky-label{font-weight:600;color:#475569;margin-bottom:24px}
+.ky-line{border-bottom:2px dashed #cbd5e1;width:80px;margin:0 auto}
+
+/* ── ALERTS ── */
+.alert{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.alert-red{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.alert-yellow{background:#fef9c3;color:#854d0e;border:1px solid #fde047}
+.alert-green{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+
+/* ── STAT CHIPS (EDITOR) ── */
+.stat-chip{border-radius:12px;padding:10px;text-align:center;border:2px solid;transition:all .2s}
+.stat-chip.ok{background:#f0fdf4;border-color:#86efac}
+.stat-chip.bad{background:#fef2f2;border-color:#fca5a5}
+.stat-chip-lbl{font-size:9px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:.6px}
+.stat-chip-val{font-size:18px;font-weight:800;line-height:1.2}
+.stat-chip.ok .stat-chip-val{color:#047857}
+.stat-chip.bad .stat-chip-val{color:#dc2626}
+.stat-chip-unit{font-size:9px;color:#94a3b8}
+.stat-chip-inp{margin-top:4px;width:100%;border:1px solid #e2e8f0;border-radius:6px;padding:3px 4px;text-align:center;font-size:11px;font-family:monospace;color:#1d4ed8;background:#eff6ff;outline:none}
+
+/* ── PREMIX TABLE ── */
+.premix-th{background:#581c87;color:#fff;padding:10px 12px;text-align:center;font-size:11px;white-space:nowrap;cursor:pointer;position:relative;min-width:130px}
+.premix-th:hover .premix-th-hint{opacity:1}
+.premix-th-hint{opacity:0;font-size:9px;color:#d8b4fe;margin-top:3px;transition:.2s}
+.premix-th-code{display:inline-block;background:#fbbf24;color:#78350f;padding:1px 6px;border-radius:4px;font-family:monospace;font-size:10px;margin-top:2px}
+.premix-inp{width:100%;text-align:center;border:1px solid #e2e8f0;border-radius:6px;padding:5px 4px;font-family:monospace;font-size:12px;color:#1e293b;background:transparent;outline:none;transition:all .18s}
+.premix-inp:hover{border-color:#c4b5fd;background:#fff}
+.premix-inp:focus{border-color:#7c3aed;background:#fff;box-shadow:0 0 0 2px rgba(124,58,237,.15)}
+.add-col-th{background:#4c1d95;color:#c4b5fd;min-width:80px;cursor:pointer;text-align:center;font-size:11px;padding:10px 8px;transition:all .18s}
+.add-col-th:hover{background:#fbbf24;color:#78350f}
+.form-panel{padding:14px 18px;border-radius:12px;margin-top:12px}
+.form-panel.purple{background:#f5f3ff;border:2px solid #c4b5fd}
+.form-panel.blue{background:#eff6ff;border:2px solid #93c5fd}
+
+/* ── NUTRIENT SETTINGS ── */
+.nutr-row{display:grid;grid-template-columns:1fr 100px 100px 40px;gap:8px;align-items:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px}
+
+/* ── FOOTER ── */
+#footer{text-align:center;padding:14px;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0;background:#fff;margin-top:16px}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:24px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;color:#1e293b}
+
+/* ── PRINT ── */
+@media print{
+  #header,#main-nav,#sidebar,#view-toggle,#print-btn,.btn,.nav-btn,#footer,#batch-controls{display:none!important}
+  .formula-layout{display:block}
+  .card{box-shadow:none;border:1px solid #ccc}
+  #phieu-panel{display:block!important}
+}
+
+/* ── MISC ── */
+.space-y>*+*{margin-top:12px}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}.gap-2{gap:8px}.gap-3{gap:12px}.flex-wrap{flex-wrap:wrap}
+.w-full{width:100%}.overflow-x-auto{overflow-x:auto}
+.mt-1{margin-top:4px}.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}
+.text-xs{font-size:11px}.text-sm{font-size:13px}
+.text-slate{color:#64748b}.text-green{color:#059669}.text-red{color:#dc2626}
+.font-mono{font-family:monospace}.font-bold{font-weight:700}.font-semibold{font-weight:600}
+.opacity-60{opacity:.6}
+hr{border:none;border-top:1px solid #e2e8f0;margin:12px 0}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div id="header">
+  <div id="header-left">
+    <div id="header-icon">🧪</div>
+    <div>
+      <div id="header-title">VetFeed Pro 2025</div>
+      <div id="header-time">⟳ <span id="date-display"></span> | <span id="clock"></span></div>
+    </div>
+  </div>
+  <nav id="main-nav">
+    <button class="nav-btn active" onclick="switchTab('formulas')">📋 Công thức</button>
+    <button class="nav-btn" onclick="switchTab('ingredients')">🌾 Nguyên liệu</button>
+    <button class="nav-btn" onclick="switchTab('nutrients')">🔬 Dinh dưỡng</button>
+    <button class="nav-btn" onclick="switchTab('premix')">💊 Premix</button>
+  </nav>
+</div>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div id="main">
+
+<!-- ──────── TAB: CÔNG THỨC ──────── -->
+<div id="tab-formulas" class="tab-panel active">
+  <div class="formula-layout">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="space-y">
+
+      <!-- Danh sách công thức -->
+      <div class="card">
+        <div class="card-header">
+          <span class="section-title" style="font-size:14px">📋 Công thức</span>
+          <button class="btn btn-green btn-sm" onclick="addFormula()">+ Thêm</button>
+        </div>
+        <div id="formula-list"></div>
+      </div>
+
+      <!-- Lượng trộn -->
+      <div class="card">
+        <div class="card-body">
+          <div class="sub-title" style="display:flex;align-items:center;gap:6px">
+            🧮 Lượng thức ăn cần trộn
+          </div>
+          <div class="mt-2" style="display:flex;align-items:center;gap:8px">
+            <input type="number" id="batch-input" value="1000" min="1" step="50"
+              oninput="setBatch(+this.value||1)" onchange="setBatch(+this.value||1)"/>
+            <span class="font-bold" style="color:#64748b">kg</span>
+          </div>
+          <div class="batch-presets" id="batch-presets"></div>
+          <div class="mt-2 text-xs text-slate" style="text-align:center">
+            Thay đổi lượng → kg từng NL tự cập nhật
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sidebar -->
+
+    <!-- CONTENT -->
+    <div class="space-y">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <div id="view-toggle">
+          <button class="view-btn active" id="vbtn-phieu" onclick="setView('phieu')">📋 Phiếu trộn</button>
+          <button class="view-btn" id="vbtn-editor" onclick="setView('editor')">✏️ Chỉnh sửa</button>
+        </div>
+        <button id="print-btn" class="btn btn-gray btn-sm" onclick="window.print()">🖨️ In phiếu</button>
+      </div>
+
+      <!-- PHIẾU TRỘN VIEW -->
+      <div id="phieu-panel" class="card">
+        <div id="phieu-header">
+          <div class="flex justify-between flex-wrap gap-3">
+            <div>
+              <div style="font-size:11px;color:#93c5fd;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Phiếu trộn thức ăn</div>
+              <div id="phieu-title" class="font-bold" style="font-size:22px"></div>
+              <div class="mt-1" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span id="phieu-code"></span>
+                <span id="phieu-target" style="font-size:12px;color:#93c5fd"></span>
+              </div>
+            </div>
+            <div id="phieu-info">
+              <div><span style="opacity:.7">Ngày:</span> <span id="phieu-date" style="color:#fff;font-weight:700"></span></div>
+              <div><span style="opacity:.7">Lượng trộn:</span> <span id="batch-display"></span></div>
+              <div style="font-size:11px;color:#93c5fd;font-family:monospace" id="phieu-time"></div>
+            </div>
+          </div>
+          <div id="nutrients-bar" class="mt-3"></div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="tbl" id="phieu-table">
+            <thead>
+              <tr>
+                <th style="width:32px">#</th>
+                <th>Thực liệu</th>
+                <th class="text-right">% CT</th>
+                <th class="text-right" id="phieu-kg-header" style="background:#fefce8;color:#92400e">kg</th>
+                <th class="text-right">Đơn giá (đ/kg)</th>
+                <th class="text-right">Thành tiền (đ)</th>
+              </tr>
+            </thead>
+            <tbody id="phieu-tbody"></tbody>
+            <tfoot>
+              <tr class="tfoot-sum">
+                <td colspan="2" style="background:#065f46">TỔNG CỘNG</td>
+                <td id="phieu-total-pct" class="text-right" style="background:#065f46;color:#fde68a"></td>
+                <td id="phieu-total-kg" class="text-right" style="background:#854d0e;color:#fde68a"></td>
+                <td style="background:#065f46"></td>
+                <td id="phieu-total-cost" class="text-right" style="background:#065f46;color:#fde68a"></td>
+              </tr>
+              <tr>
+                <td colspan="2" style="background:#f8fafc;color:#475569;font-size:12px;font-weight:400">Giá thành / kg thức ăn:</td>
+                <td colspan="4" class="text-right" style="background:#f8fafc;color:#059669;font-weight:700;font-size:14px" id="phieu-price-per-kg"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div id="ky-ket">
+          <div><div class="ky-label">Ký lệnh trộn / Thủ kho thực liệu</div><div class="ky-line"></div></div>
+          <div><div class="ky-label">Người phối trộn</div><div class="ky-line"></div></div>
+          <div><div class="ky-label">Thủ kho thành phẩm / Người nhận</div><div class="ky-line"></div></div>
+        </div>
+      </div><!-- /phieu-panel -->
+
+      <!-- EDITOR VIEW -->
+      <div id="editor-panel" class="space-y" style="display:none">
+
+        <!-- Meta -->
+        <div class="card">
+          <div class="card-body">
+            <div class="grid-2">
+              <div>
+                <label class="text-xs text-slate font-bold" style="text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Tên công thức</label>
+                <input class="inp" id="ed-name" oninput="updateFormulaMeta('name',this.value)" style="font-size:16px;font-weight:700"/>
+              </div>
+              <div style="display:flex;gap:8px">
+                <div style="flex:1">
+                  <label class="text-xs text-slate font-bold" style="text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Mã (Code)</label>
+                  <input class="inp inp-mono" id="ed-code" oninput="updateFormulaMeta('code',this.value)"/>
+                </div>
+                <div style="padding-top:22px">
+                  <button class="btn btn-icon" id="ed-delete-btn" onclick="deleteCurrentFormula()" title="Xóa công thức này">🗑️</button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <label class="text-xs text-slate font-bold" style="text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Mô tả đối tượng</label>
+              <input class="inp" id="ed-target" oninput="updateFormulaMeta('target',this.value)" placeholder="VD: Gà trứng thương phẩm, 2-28 tuần..."/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Standards -->
+        <div class="card">
+          <div class="card-body">
+            <div class="flex items-center gap-2 mb-3">
+              <span style="font-size:15px">⚙️</span>
+              <span class="font-bold text-sm">Tiêu chuẩn dinh dưỡng (riêng cho công thức này)</span>
+            </div>
+            <div id="ed-standards" class="grid-4" style="gap:10px"></div>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div class="card">
+          <div class="card-header">
+            <span class="font-bold text-sm">Thành phần & Tỷ lệ</span>
+            <span id="ed-total-badge" class="alert"></span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th style="min-width:180px">Nguyên liệu</th>
+                  <th class="text-right" style="min-width:100px">% CT</th>
+                  <th class="text-right" id="ed-kg-header" style="background:#fefce8;color:#92400e;min-width:110px">kg</th>
+                  <th class="text-right" style="min-width:110px">Giá (đ/kg)</th>
+                  <th class="text-right" style="min-width:120px">Thành tiền (đ)</th>
+                  <th style="width:36px"></th>
+                </tr>
+              </thead>
+              <tbody id="ed-tbody"></tbody>
+              <tfoot>
+                <tr class="tfoot-sum">
+                  <td style="background:#065f46">TỔNG</td>
+                  <td id="ed-total-pct" class="text-right" style="background:#065f46;color:#fde68a"></td>
+                  <td id="ed-total-kg" class="text-right" style="background:#854d0e;color:#fde68a"></td>
+                  <td style="background:#065f46"></td>
+                  <td id="ed-total-cost" class="text-right" style="background:#065f46;color:#fde68a"></td>
+                  <td style="background:#065f46"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div style="padding:12px 16px;border-top:1px solid #f1f5f9">
+            <button class="btn btn-outline-green w-full" style="justify-content:center;padding:10px" onclick="addFormulaItem()">
+              + Thêm nguyên liệu vào công thức
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /editor-panel -->
+    </div><!-- /content -->
+  </div><!-- /formula-layout -->
+</div><!-- /tab-formulas -->
+
+<!-- ──────── TAB: NGUYÊN LIỆU ──────── -->
+<div id="tab-ingredients" class="tab-panel">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="section-title">🌾 Kho nguyên liệu</div>
+        <div class="text-xs text-slate mt-1">Thay đổi giá / dinh dưỡng → tất cả công thức cập nhật ngay</div>
+      </div>
+      <button class="btn btn-green" onclick="addIngredient()">+ Thêm nguyên liệu</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="tbl" id="ing-table">
+        <thead>
+          <tr id="ing-header-row"></tr>
+        </thead>
+        <tbody id="ing-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ──────── TAB: DINH DƯỠNG ──────── -->
+<div id="tab-nutrients" class="tab-panel">
+  <div style="max-width:700px;margin:0 auto" class="space-y">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="section-title">🔬 Cấu hình chỉ tiêu dinh dưỡng</div>
+          <div class="text-xs text-slate mt-1">Thêm / bớt / đổi tên → toàn bộ bảng cập nhật tự động</div>
+        </div>
+        <button class="btn btn-green" onclick="addNutrient()">+ Thêm chỉ tiêu</button>
+      </div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 90px 100px 36px;gap:8px;padding:4px 2px;margin-bottom:6px">
+          <div class="text-xs text-slate font-bold" style="text-transform:uppercase">Tên chỉ tiêu</div>
+          <div class="text-xs text-slate font-bold" style="text-transform:uppercase">Đơn vị</div>
+          <div class="text-xs text-slate font-bold" style="text-transform:uppercase">Chuẩn chung</div>
+          <div></div>
+        </div>
+        <div id="nutrient-list" class="space-y"></div>
+        <button class="btn btn-outline-green w-full mt-3" style="justify-content:center;padding:10px" onclick="addNutrient()">
+          + Thêm chỉ tiêu dinh dưỡng mới
+        </button>
+      </div>
+    </div>
+    <div style="background:#ecfdf5;border:1px solid #86efac;border-radius:12px;padding:14px;font-size:13px;color:#065f46">
+      <p class="font-bold">💡 Hướng dẫn:</p>
+      <ul style="list-style:disc;padding-left:18px;margin-top:6px;line-height:1.8;font-size:12px">
+        <li><strong>Tiêu chuẩn chung</strong>: áp dụng cho tất cả công thức chưa thiết lập riêng.</li>
+        <li><strong>Tiêu chuẩn riêng</strong>: vào tab Công thức → Chỉnh sửa → sửa ô "chuẩn".</li>
+        <li>Thêm chỉ tiêu mới → vào tab <strong>Nguyên liệu</strong> để nhập giá trị.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ──────── TAB: PREMIX ──────── -->
+<div id="tab-premix" class="tab-panel">
+  <div class="space-y">
+
+    <!-- Header card -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex justify-between items-center flex-wrap gap-3">
+          <div>
+            <div class="section-title">💊 Quản lý Premix Vemedim</div>
+            <div class="text-xs text-slate mt-1">Thêm / bớt loại premix (cột) và thành phần (hàng) — cập nhật thời gian thực</div>
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <button class="btn btn-purple" onclick="togglePremixForm('product')">+ Thêm loại Premix</button>
+            <button class="btn btn-blue" onclick="togglePremixForm('component')">+ Thêm Thành phần</button>
+          </div>
+        </div>
+
+        <!-- Form thêm premix mới -->
+        <div id="form-add-product" class="form-panel purple" style="display:none;margin-top:12px">
+          <div class="font-bold text-sm" style="color:#4c1d95;margin-bottom:10px">+ Thêm loại Premix mới (cột mới)</div>
+          <div class="flex flex-wrap gap-3 items-end">
+            <div>
+              <label class="text-xs font-bold" style="color:#7c3aed;display:block;margin-bottom:4px">Tên premix</label>
+              <input class="inp" id="new-prod-name" placeholder="VD: EM7, Vemevit 9..." style="width:200px" onkeydown="if(event.key==='Enter')confirmAddProduct()"/>
+            </div>
+            <div>
+              <label class="text-xs font-bold" style="color:#7c3aed;display:block;margin-bottom:4px">Mã (Code)</label>
+              <input class="inp inp-mono" id="new-prod-code" placeholder="VD: EM7..." style="width:120px" onkeydown="if(event.key==='Enter')confirmAddProduct()"/>
+            </div>
+            <button class="btn btn-purple" onclick="confirmAddProduct()">✓ Thêm ngay</button>
+            <button class="btn btn-gray" onclick="togglePremixForm(null)">✕</button>
+          </div>
+          <div class="text-xs mt-2" style="color:#7c3aed">💡 Sau khi thêm, click tiêu đề cột để sửa tên/mã.</div>
+        </div>
+
+        <!-- Form thêm thành phần -->
+        <div id="form-add-component" class="form-panel blue" style="display:none;margin-top:12px">
+          <div class="font-bold text-sm" style="color:#1e40af;margin-bottom:10px">+ Thêm Thành phần mới (hàng mới)</div>
+          <div class="flex flex-wrap gap-3 items-end">
+            <div>
+              <label class="text-xs font-bold" style="color:#2563eb;display:block;margin-bottom:4px">Tên thành phần</label>
+              <input class="inp" id="new-comp-name" placeholder="VD: Vitamin B12, Biotin..." style="width:240px" onkeydown="if(event.key==='Enter')confirmAddComponent()"/>
+            </div>
+            <div>
+              <label class="text-xs font-bold" style="color:#2563eb;display:block;margin-bottom:4px">Đơn vị</label>
+              <select class="inp" id="new-comp-unit" style="width:110px">
+                <option>mg/kg</option><option>mcg/kg</option><option>IU/kg</option><option>g/kg</option><option>%</option>
+              </select>
+            </div>
+            <button class="btn btn-blue" onclick="confirmAddComponent()">✓ Thêm ngay</button>
+            <button class="btn btn-gray" onclick="togglePremixForm(null)">✕</button>
+          </div>
+          <div class="text-xs mt-2" style="color:#2563eb">💡 Hover vào tên hàng → click ✏️ để chỉnh sửa sau khi thêm.</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="flex flex-wrap gap-2 mt-3">
+          <span id="stat-products" class="badge badge-purple"></span>
+          <span id="stat-components" class="badge badge-blue"></span>
+          <span class="badge badge-green">⚡ Cập nhật real-time</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bảng premix -->
+    <div class="card">
+      <div style="padding:10px 16px;background:linear-gradient(135deg,#3b0764,#581c87);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <span style="color:#fff;font-weight:700;font-size:13px">📋 Bảng thành phần Premix</span>
+        <span style="color:#d8b4fe;font-size:11px">Click tiêu đề cột để sửa/xóa | Hover hàng → ✏️ để chỉnh thành phần</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="tbl" id="premix-table" style="background:#fff">
+          <thead id="premix-thead"></thead>
+          <tbody id="premix-tbody"></tbody>
+        </table>
+      </div>
+      <div style="padding:12px 16px;border-top:1px solid #e2e8f0;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-outline-blue" style="flex:1;justify-content:center;padding:10px" onclick="togglePremixForm('component')">
+          + Thêm thành phần mới (hàng mới)
+        </button>
+        <button class="btn btn-outline-purple" style="flex:1;justify-content:center;padding:10px" onclick="togglePremixForm('product')">
+          + Thêm loại premix mới (cột mới)
+        </button>
+      </div>
+    </div>
+
+    <!-- Hướng dẫn -->
+    <div class="grid-3">
+      <div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:12px;padding:14px">
+        <div class="font-bold text-sm mb-2" style="color:#4c1d95">+ Thêm loại premix mới</div>
+        <ol style="font-size:12px;color:#5b21b6;padding-left:16px;line-height:1.9;list-style:decimal">
+          <li>Click <strong>"Thêm loại Premix"</strong></li>
+          <li>Nhập tên và mã premix</li>
+          <li>Click <strong>"Thêm ngay"</strong></li>
+          <li>Điền giá trị vào từng ô cột mới</li>
+        </ol>
+      </div>
+      <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:12px;padding:14px">
+        <div class="font-bold text-sm mb-2" style="color:#1e40af">+ Thêm thành phần mới</div>
+        <ol style="font-size:12px;color:#1d4ed8;padding-left:16px;line-height:1.9;list-style:decimal">
+          <li>Click <strong>"Thêm Thành phần"</strong></li>
+          <li>Nhập tên & chọn đơn vị</li>
+          <li>Click <strong>"Thêm ngay"</strong></li>
+          <li>Hover tên hàng → ✏️ để chỉnh sửa</li>
+        </ol>
+      </div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px">
+        <div class="font-bold text-sm mb-2" style="color:#334155">✏️ Chỉnh sửa & Xóa</div>
+        <ul style="font-size:12px;color:#475569;padding-left:16px;line-height:1.9;list-style:disc">
+          <li>Click <strong>tiêu đề cột</strong> → sửa tên/mã/xóa</li>
+          <li>Hover hàng → <strong>✏️</strong> → sửa/xóa</li>
+          <li>Nhập <strong>—</strong> vào ô nếu không có dữ liệu</li>
+          <li>Mọi thay đổi cập nhật <strong>ngay lập tức</strong></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- MODAL: Chỉnh sửa premix product -->
+<div id="modal-prod" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">✏️ Chỉnh sửa Premix</div>
+    <div class="space-y">
+      <div>
+        <label class="text-xs font-bold text-slate" style="display:block;margin-bottom:4px">Tên premix</label>
+        <input class="inp" id="modal-prod-name" placeholder="Tên premix..."/>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-slate" style="display:block;margin-bottom:4px">Mã (Code)</label>
+        <input class="inp inp-mono" id="modal-prod-code" placeholder="Mã..."/>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button class="btn btn-green" style="flex:1;justify-content:center" onclick="saveModalProduct()">✓ Lưu</button>
+      <button class="btn btn-red btn-sm" onclick="deleteModalProduct()">🗑️ Xóa</button>
+      <button class="btn btn-gray" onclick="closeModal('modal-prod')">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Chỉnh sửa premix component row -->
+<div id="modal-comp" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">✏️ Chỉnh sửa Thành phần</div>
+    <div class="space-y">
+      <div>
+        <label class="text-xs font-bold text-slate" style="display:block;margin-bottom:4px">Tên thành phần</label>
+        <input class="inp" id="modal-comp-name" placeholder="Tên thành phần..."/>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-slate" style="display:block;margin-bottom:4px">Đơn vị</label>
+        <select class="inp" id="modal-comp-unit">
+          <option>mg/kg</option><option>mcg/kg</option><option>IU/kg</option><option>g/kg</option><option>%</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button class="btn btn-green" style="flex:1;justify-content:center" onclick="saveModalComponent()">✓ Lưu</button>
+      <button class="btn btn-red btn-sm" onclick="deleteModalComponent()">🗑️ Xóa</button>
+      <button class="btn btn-gray" onclick="closeModal('modal-comp')">✕</button>
+    </div>
+  </div>
+</div>
+
+<div id="footer">© 2025 VetFeed Pro — Hệ thống phối trộn thức ăn chăn nuôi thông minh</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+function uid(){return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+let nutrients=[
+  {id:'me', name:'ME',     unit:'Kcal/kg',standard:2750},
+  {id:'cp', name:'CP',     unit:'%',       standard:15.5},
+  {id:'lys',name:'Lysine', unit:'%',       standard:0.71},
+  {id:'mc', name:'M+C',    unit:'%',       standard:0.58},
+  {id:'ca', name:'Ca',     unit:'%',       standard:2.8 },
+  {id:'p',  name:'P',      unit:'%',       standard:0.35},
+];
+
+let ingredients=[
+  {id:'bap',        name:'Bắp',           price:5270,  nutrients:{me:3370,cp:8.7,  lys:0.24,mc:0.38,ca:0.02,p:0.28}},
+  {id:'cam-gao',    name:'Cám gạo',        price:6000,  nutrients:{me:2640,cp:12.0, lys:0.55,mc:0.31,ca:0.05,p:1.40}},
+  {id:'bot-ca-55',  name:'Bột cá 55',      price:23000, nutrients:{me:2880,cp:55.0, lys:3.87,mc:1.65,ca:5.30,p:2.80}},
+  {id:'bd-nanh-46', name:'BD nành 46',      price:9350,  nutrients:{me:2230,cp:46.0, lys:2.90,mc:1.31,ca:0.30,p:0.65}},
+  {id:'bot-xuong',  name:'Bột xương',       price:5200,  nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:24.0, p:11.0}},
+  {id:'bot-so',     name:'Bột sò to',       price:1000,  nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:36.0, p:0.02}},
+  {id:'muoi',       name:'Muối ăn',         price:3000,  nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'embavit2',   name:'Embavit 2',       price:43200, nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'vime-senic', name:'Vime senic EH',   price:70000, nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'lactozym',   name:'Lactozym',        price:91200, nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'terra-egg',  name:'Terra Egg',       price:129000,nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'methionin',  name:'Methionin',       price:145000,nutrients:{me:0,   cp:0,    lys:0,   mc:1.0, ca:0,    p:0   }},
+  {id:'mangan',     name:'Mangan',          price:20000, nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'chong-moc',  name:'Chống mốc',       price:95000, nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'dau-ca',     name:'Dầu cá',          price:22000, nutrients:{me:8600,cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'lysine',     name:'Lysine HCl',      price:38000, nutrients:{me:0,   cp:0,    lys:1.0, mc:0,   ca:0,    p:0   }},
+  {id:'kho-dau-46', name:'Khô đậu nành 46', price:9350,  nutrients:{me:2230,cp:46.0, lys:2.90,mc:1.31,ca:0.30,p:0.65}},
+  {id:'bergafat',   name:'Bergafat',        price:42000, nutrients:{me:7500,cp:0,    lys:0,   mc:0,   ca:0,    p:0   }},
+  {id:'dcp',        name:'DCP',             price:12000, nutrients:{me:0,   cp:0,    lys:0,   mc:0,   ca:22.0, p:18.0}},
+  {id:'bot-mi',     name:'Bột mì',          price:8500,  nutrients:{me:3100,cp:11.5, lys:0.28,mc:0.35,ca:0.03,p:0.35}},
+  {id:'tam-bap',    name:'Tấm bắp',         price:4800,  nutrients:{me:3280,cp:9.2,  lys:0.26,mc:0.40,ca:0.02,p:0.27}},
+];
+
+let formulas=[
+  {
+    id:'ga-de-cn', code:'GTrDe1', name:'Gà Đẻ Công Nghiệp',
+    target:'Gà Trứng TP 2%–28 tuần thực thụ – Tr. 5 (Lô 400 kg)',
+    standards:{me:2675,cp:18.2,lys:0.91,mc:0.77,ca:4.1,p:0.45},
+    items:[
+      {ingredientId:'bap',       percentage:50.398},
+      {ingredientId:'cam-gao',   percentage:5.0   },
+      {ingredientId:'bot-ca-55', percentage:2.5   },
+      {ingredientId:'bd-nanh-46',percentage:26.5  },
+      {ingredientId:'methionin', percentage:0.170 },
+      {ingredientId:'bot-xuong', percentage:2.930 },
+      {ingredientId:'bot-so',    percentage:10.070},
+      {ingredientId:'muoi',      percentage:0.310 },
+      {ingredientId:'terra-egg', percentage:0.130 },
+      {ingredientId:'bergafat',  percentage:1.440 },
+      {ingredientId:'embavit2',  percentage:0.250 },
+      {ingredientId:'lactozym',  percentage:0.200 },
+      {ingredientId:'mangan',    percentage:0.022 },
+      {ingredientId:'chong-moc', percentage:0.100 },
+    ]
+  },
+  {
+    id:'gdpde', code:'GdpDe', name:'Gà Giống Đẻ ĐP',
+    target:'Gà giống địa phương giai đoạn đẻ – Tr. 1',
+    standards:{me:2750,cp:15.5,lys:0.71,mc:0.58,ca:2.8,p:0.35},
+    items:[
+      {ingredientId:'bap',       percentage:56.329},
+      {ingredientId:'cam-gao',   percentage:5.0   },
+      {ingredientId:'bot-ca-55', percentage:5.0   },
+      {ingredientId:'bd-nanh-46',percentage:22.0  },
+      {ingredientId:'methionin', percentage:0.037 },
+      {ingredientId:'bot-xuong', percentage:1.630 },
+      {ingredientId:'bot-so',    percentage:9.0   },
+      {ingredientId:'muoi',      percentage:0.140 },
+      {ingredientId:'embavit2',  percentage:0.450 },
+      {ingredientId:'vime-senic',percentage:0.100 },
+      {ingredientId:'lactozym',  percentage:0.100 },
+      {ingredientId:'terra-egg', percentage:0.100 },
+      {ingredientId:'mangan',    percentage:0.014 },
+      {ingredientId:'chong-moc', percentage:0.100 },
+    ]
+  },
+  {
+    id:'gtrde1-b', code:'GTrDe1-B', name:'Gà Trứng TP (CT nhiều bắp)',
+    target:'Gà Trứng Thương phẩm – công thức nhiều bắp (biến thể)',
+    standards:{me:2675,cp:18.2,lys:0.91,mc:0.77,ca:4.1,p:0.45},
+    items:[
+      {ingredientId:'bap',       percentage:50.398},
+      {ingredientId:'cam-gao',   percentage:5.0   },
+      {ingredientId:'bot-ca-55', percentage:2.5   },
+      {ingredientId:'bd-nanh-46',percentage:26.5  },
+      {ingredientId:'methionin', percentage:0.17  },
+      {ingredientId:'bot-xuong', percentage:2.93  },
+      {ingredientId:'bot-so',    percentage:10.07 },
+      {ingredientId:'muoi',      percentage:0.31  },
+      {ingredientId:'terra-egg', percentage:0.13  },
+      {ingredientId:'bergafat',  percentage:1.44  },
+      {ingredientId:'embavit2',  percentage:0.25  },
+      {ingredientId:'lactozym',  percentage:0.20  },
+      {ingredientId:'mangan',    percentage:0.022 },
+      {ingredientId:'chong-moc', percentage:0.10  },
+    ]
+  },
+  {
+    id:'ga-thit-con', code:'GT1', name:'Gà Thịt (0–3 tuần)',
+    target:'Gà broiler giai đoạn con (starter)',
+    standards:{me:3050,cp:22.0,lys:1.20,mc:0.90,ca:1.0,p:0.45},
+    items:[
+      {ingredientId:'bap',       percentage:52.0 },
+      {ingredientId:'cam-gao',   percentage:5.0  },
+      {ingredientId:'kho-dau-46',percentage:28.0 },
+      {ingredientId:'bot-ca-55', percentage:8.0  },
+      {ingredientId:'dau-ca',    percentage:2.0  },
+      {ingredientId:'bot-xuong', percentage:1.5  },
+      {ingredientId:'lysine',    percentage:0.2  },
+      {ingredientId:'methionin', percentage:0.15 },
+      {ingredientId:'muoi',      percentage:0.3  },
+      {ingredientId:'embavit2',  percentage:0.5  },
+      {ingredientId:'vime-senic',percentage:0.15 },
+      {ingredientId:'chong-moc', percentage:0.1  },
+      {ingredientId:'mangan',    percentage:0.1  },
+    ]
+  },
+  {
+    id:'ga-thit-lon', code:'GT2', name:'Gà Thịt (4–6 tuần)',
+    target:'Gà broiler giai đoạn lớn (finisher)',
+    standards:{me:3150,cp:19.0,lys:1.00,mc:0.72,ca:0.9,p:0.40},
+    items:[
+      {ingredientId:'bap',       percentage:57.0 },
+      {ingredientId:'cam-gao',   percentage:8.0  },
+      {ingredientId:'kho-dau-46',percentage:24.0 },
+      {ingredientId:'bot-ca-55', percentage:5.0  },
+      {ingredientId:'dau-ca',    percentage:2.0  },
+      {ingredientId:'bot-xuong', percentage:1.2  },
+      {ingredientId:'lysine',    percentage:0.15 },
+      {ingredientId:'methionin', percentage:0.1  },
+      {ingredientId:'muoi',      percentage:0.3  },
+      {ingredientId:'embavit2',  percentage:0.5  },
+      {ingredientId:'vime-senic',percentage:0.15 },
+      {ingredientId:'chong-moc', percentage:0.1  },
+      {ingredientId:'mangan',    percentage:0.05 },
+    ]
+  },
+  {
+    id:'heo-thit-h2', code:'H2', name:'Heo Thịt 20–50 kg',
+    target:'Heo thịt giai đoạn 20–50 kg',
+    standards:{me:3100,cp:18.0,lys:0.95,mc:0.55,ca:0.85,p:0.60},
+    items:[
+      {ingredientId:'bap',       percentage:55.0},
+      {ingredientId:'cam-gao',   percentage:15.0},
+      {ingredientId:'bd-nanh-46',percentage:22.0},
+      {ingredientId:'bot-ca-55', percentage:5.0 },
+      {ingredientId:'bot-xuong', percentage:1.5 },
+      {ingredientId:'muoi',      percentage:0.4 },
+      {ingredientId:'embavit2',  percentage:0.5 },
+      {ingredientId:'methionin', percentage:0.1 },
+      {ingredientId:'chong-moc', percentage:0.1 },
+      {ingredientId:'mangan',    percentage:0.1 },
+    ]
+  },
+];
+
+// PREMIX DATA
+let premixComponents=[
+  {id:'vit-a',  name:'Vitamin A',   unit:'IU/kg' },
+  {id:'vit-d3', name:'Vitamin D3',  unit:'IU/kg' },
+  {id:'vit-e',  name:'Vitamin E',   unit:'mg/kg' },
+  {id:'vit-k',  name:'Vitamin K3',  unit:'mg/kg' },
+  {id:'vit-b1', name:'Vitamin B1',  unit:'mg/kg' },
+  {id:'vit-b2', name:'Vitamin B2',  unit:'mg/kg' },
+  {id:'vit-b6', name:'Vitamin B6',  unit:'mg/kg' },
+  {id:'vit-b12',name:'Vitamin B12', unit:'mcg/kg'},
+  {id:'vit-c',  name:'Vitamin C',   unit:'mg/kg' },
+  {id:'fe',     name:'Sắt (Fe)',    unit:'mg/kg' },
+  {id:'cu',     name:'Đồng (Cu)',   unit:'mg/kg' },
+  {id:'zn',     name:'Kẽm (Zn)',    unit:'mg/kg' },
+  {id:'mn',     name:'Mangan (Mn)', unit:'mg/kg' },
+  {id:'se',     name:'Selen (Se)',  unit:'mcg/kg'},
+  {id:'i',      name:'Iốt (I)',     unit:'mg/kg' },
+];
+
+let premixProducts=[
+  {id:'em1',code:'EM1',name:'EM1',values:{'vit-a':'4,000,000','vit-d3':'800,000','vit-e':'8,000','vit-k':'1,500','vit-b1':'1,500','vit-b2':'4,000','vit-b6':'1,500','vit-b12':'8,000','vit-c':'—','fe':'30,000','cu':'5,000','zn':'40,000','mn':'30,000','se':'100,000','i':'500'}},
+  {id:'emb2',code:'EMB2',name:'EMB2',values:{'vit-a':'4,000,000','vit-d3':'800,000','vit-e':'8,000','vit-k':'2,000','vit-b1':'2,000','vit-b2':'5,000','vit-b6':'2,000','vit-b12':'10,000','vit-c':'—','fe':'40,000','cu':'10,000','zn':'50,000','mn':'40,000','se':'120,000','i':'600'}},
+  {id:'em4',code:'EM4',name:'EM4',values:{'vit-a':'2,000,000','vit-d3':'400,000','vit-e':'4,000','vit-k':'1,000','vit-b1':'1,000','vit-b2':'3,000','vit-b6':'1,000','vit-b12':'5,000','vit-c':'—','fe':'20,000','cu':'2,000','zn':'30,000','mn':'20,000','se':'80,000','i':'400'}},
+  {id:'embavit2-p',code:'Embavit2',name:'Embavit 2',values:{'vit-a':'2,000,000','vit-d3':'400,000','vit-e':'4,000','vit-k':'1,000','vit-b1':'1,000','vit-b2':'3,000','vit-b6':'1,000','vit-b12':'5,000','vit-c':'50,000','fe':'15,000','cu':'1,500','zn':'25,000','mn':'15,000','se':'60,000','i':'300'}},
+  {id:'terra-egg-p',code:'TerraEgg',name:'Terra Egg',values:{'vit-a':'6,600,000','vit-d3':'1,170,000','vit-e':'10,000','vit-k':'2,500','vit-b1':'3,000','vit-b2':'7,000','vit-b6':'3,000','vit-b12':'15,000','vit-c':'100,000','fe':'45,000','cu':'8,000','zn':'50,000','mn':'50,000','se':'150,000','i':'700'}},
+  {id:'vemevit9',code:'Vemevit9',name:'Vemevit 9',values:{'vit-a':'2,000,000','vit-d3':'400,000','vit-e':'4,000','vit-k':'800','vit-b1':'800','vit-b2':'2,500','vit-b6':'800','vit-b12':'4,000','vit-c':'—','fe':'—','cu':'—','zn':'—','mn':'—','se':'—','i':'—'}},
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let selectedFormulaId = 'ga-de-cn';
+let batchKg = 1000;
+let currentView = 'phieu';
+let currentTab = 'formulas';
+let _modalProdId = null;
+let _modalCompId = null;
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+const fmtN=(v,d=2)=>{if(v===0)return'0';return v.toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d})};
+const fmtP=(v)=>v.toLocaleString('vi-VN',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fmtDate=(d)=>d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'2-digit'});
+const fmtTime=(d)=>d.toLocaleTimeString('vi-VN');
+const fmtDateLong=(d)=>d.toLocaleDateString('vi-VN',{weekday:'short',year:'numeric',month:'2-digit',day:'2-digit'});
+
+function getFormula(id){return formulas.find(f=>f.id===id)||formulas[0]}
+function getIngredient(id){return ingredients.find(i=>i.id===id)}
+
+function calcTotals(formula){
+  const res={pct:0,price:0};
+  nutrients.forEach(n=>res[n.id]=0);
+  formula.items.forEach(item=>{
+    const ing=getIngredient(item.ingredientId);
+    if(!ing)return;
+    const f=item.percentage/100;
+    res.pct+=item.percentage;
+    res.price+=ing.price*f;
+    nutrients.forEach(n=>res[n.id]+=(ing.nutrients[n.id]||0)*f);
+  });
+  return res;
+}
+
+function effectiveStd(formula){
+  const res={};
+  nutrients.forEach(n=>{res[n.id]=formula.standards?.[n.id]??n.standard});
+  return res;
+}
+
+function getBadgeClass(fid){
+  if(fid==='ga-de-cn')return'badge-rose';
+  if(fid==='gdpde')return'badge-orange';
+  if(fid.startsWith('ga-thit'))return'badge-blue';
+  if(fid.startsWith('heo'))return'badge-pink';
+  return'badge-green';
+}
+function getBadgeLabel(fid){
+  if(fid==='ga-de-cn')return'🐔 Đẻ CN';
+  if(fid==='gdpde')return'🐓 Giống';
+  if(fid.startsWith('ga-thit'))return'🍗 Thịt';
+  if(fid.startsWith('heo'))return'🐷 Heo';
+  return'🐣 Khác';
+}
+
+// ══════════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════════
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=fmtTime(now);
+  document.getElementById('date-display').textContent=fmtDateLong(now);
+  document.getElementById('phieu-time').textContent=fmtTime(now);
+  document.getElementById('phieu-date').textContent=fmtDate(now);
+  document.getElementById('batch-display').textContent=batchKg.toLocaleString()+' kg';
+  document.getElementById('batch-display').style.color='#fde68a';
+  document.getElementById('batch-display').style.fontSize='22px';
+  document.getElementById('batch-display').style.fontWeight='800';
+}
+
+// ══════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const idx=['formulas','ingredients','nutrients','premix'].indexOf(tab);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  renderAll();
+}
+
+// ══════════════════════════════════════════════
+// VIEW TOGGLE
+// ══════════════════════════════════════════════
+function setView(v){
+  currentView=v;
+  document.getElementById('phieu-panel').style.display=v==='phieu'?'block':'none';
+  document.getElementById('editor-panel').style.display=v==='editor'?'block':'none';
+  document.getElementById('vbtn-phieu').classList.toggle('active',v==='phieu');
+  document.getElementById('vbtn-editor').classList.toggle('active',v==='editor');
+  renderAll();
+}
+
+// ══════════════════════════════════════════════
+// BATCH
+// ══════════════════════════════════════════════
+function setBatch(v){
+  batchKg=Math.max(1,v);
+  document.getElementById('batch-input').value=batchKg;
+  renderBatchPresets();
+  renderAll();
+}
+
+function renderBatchPresets(){
+  const presets=[200,400,500,1000,2000,5000];
+  document.getElementById('batch-presets').innerHTML=presets.map(v=>
+    `<button class="preset-btn${batchKg===v?' active':''}" onclick="setBatch(${v})">${v}</button>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════
+// FORMULA LIST
+// ══════════════════════════════════════════════
+function renderFormulaList(){
+  document.getElementById('formula-list').innerHTML=formulas.map(f=>`
+    <button class="formula-item${f.id===selectedFormulaId?' selected':''}" onclick="selectFormula('${f.id}')">
+      <div>
+        <div class="formula-item-name">${f.name}</div>
+        <div class="formula-item-badges">
+          <span class="badge badge-amber" style="font-family:monospace">${f.code}</span>
+          <span class="badge ${getBadgeClass(f.id)}">${getBadgeLabel(f.id)}</span>
+        </div>
+      </div>
+      <span style="color:#94a3b8;font-size:16px">›</span>
+    </button>
+  `).join('');
+}
+
+function selectFormula(id){
+  selectedFormulaId=id;
+  renderAll();
+}
+
+function addFormula(){
+  const f={id:uid(),code:'NEW',name:'Công thức mới',target:'',items:[]};
+  formulas.push(f);
+  selectedFormulaId=f.id;
+  setView('editor');
+  renderAll();
+}
+
+function deleteCurrentFormula(){
+  if(formulas.length<=1){alert('Phải giữ ít nhất 1 công thức!');return}
+  if(!confirm('Xóa công thức này?'))return;
+  formulas=formulas.filter(f=>f.id!==selectedFormulaId);
+  selectedFormulaId=formulas[0].id;
+  setView('phieu');
+  renderAll();
+}
+
+function updateFormulaMeta(key,val){
+  const f=formulas.find(f=>f.id===selectedFormulaId);
+  if(f)f[key]=val;
+  renderFormulaList();
+  if(key==='name'||key==='code'){
+    document.getElementById('phieu-title').textContent=f.name;
+    document.getElementById('phieu-code').textContent=f.code;
+  }
+}
+
+// ══════════════════════════════════════════════
+// PHIẾU TRỘN
+// ══════════════════════════════════════════════
+function renderPhieu(){
+  const formula=getFormula(selectedFormulaId);
+  const totals=calcTotals(formula);
+  const stds=effectiveStd(formula);
+
+  document.getElementById('phieu-title').textContent=formula.name;
+  document.getElementById('phieu-code').textContent=formula.code;
+  document.getElementById('phieu-target').textContent=formula.target;
+  document.getElementById('phieu-kg-header').textContent=`kg / ${batchKg.toLocaleString()} kg`;
+
+  // Nutrients bar
+  document.getElementById('nutrients-bar').innerHTML=nutrients.map(n=>{
+    const val=totals[n.id]||0;
+    const std=stds[n.id];
+    const ok=!std||Math.abs(val-std)/std<0.05;
+    return`<div class="nutr-chip ${ok?'ok':'bad'}">
+      <div class="nutr-chip-label">${n.name}</div>
+      <div class="nutr-chip-val">${fmtN(val,n.id==='me'?0:2)}</div>
+      ${std?`<div class="nutr-chip-std">Chuẩn: ${std}</div>`:''}
+      <div class="nutr-chip-std">${n.unit}</div>
+    </div>`;
+  }).join('');
+
+  // Table body
+  document.getElementById('phieu-tbody').innerHTML=formula.items.map((item,idx)=>{
+    const ing=getIngredient(item.ingredientId);
+    if(!ing)return'';
+    const kg=(item.percentage/100)*batchKg;
+    const cost=ing.price*(item.percentage/100);
+    return`<tr>
+      <td style="color:#94a3b8;font-size:11px">${idx+1}</td>
+      <td class="font-semibold">${ing.name}</td>
+      <td class="text-right num">${fmtN(item.percentage,3)}%</td>
+      <td class="text-right num kg-col">${fmtN(kg,2)} kg</td>
+      <td class="text-right num" style="color:#64748b">${fmtP(ing.price)}</td>
+      <td class="text-right num">${fmtP(cost*batchKg)}</td>
+    </tr>`;
+  }).join('');
+
+  const pctOk=Math.abs(totals.pct-100)<0.05;
+  document.getElementById('phieu-total-pct').textContent=fmtN(totals.pct,3)+'%';
+  document.getElementById('phieu-total-kg').textContent=fmtN(batchKg,0)+' kg';
+  document.getElementById('phieu-total-cost').textContent=fmtP(totals.price*batchKg)+' đ';
+  document.getElementById('phieu-price-per-kg').textContent=fmtP(totals.price)+' đ/kg';
+}
+
+// ══════════════════════════════════════════════
+// EDITOR
+// ══════════════════════════════════════════════
+function renderEditor(){
+  const formula=getFormula(selectedFormulaId);
+  const totals=calcTotals(formula);
+  const stds=effectiveStd(formula);
+
+  document.getElementById('ed-name').value=formula.name;
+  document.getElementById('ed-code').value=formula.code;
+  document.getElementById('ed-target').value=formula.target;
+  document.getElementById('ed-kg-header').textContent=`kg / ${batchKg.toLocaleString()} kg`;
+  document.getElementById('ed-delete-btn').style.display=formulas.length>1?'':'none';
+
+  // Standards
+  document.getElementById('ed-standards').innerHTML=nutrients.map(n=>{
+    const val=totals[n.id]||0;
+    const std=stds[n.id];
+    const ok=!std||Math.abs(val-std)/std<0.05;
+    return`<div class="stat-chip ${ok?'ok':'bad'}">
+      <div class="stat-chip-lbl">${n.name}</div>
+      <div class="stat-chip-val">${fmtN(val,n.id==='me'?0:2)}</div>
+      <div class="stat-chip-unit">${n.unit}</div>
+      <input class="stat-chip-inp" type="number" step="0.01"
+        value="${formula.standards?.[n.id]??n.standard??''}"
+        onchange="updateFormulaStandard('${n.id}',+this.value)"
+        placeholder="Chuẩn"/>
+      <div style="font-size:9px;color:#94a3b8;margin-top:2px">chuẩn</div>
+    </div>`;
+  }).join('');
+
+  // Total badge
+  const over=totals.pct>100.05, under=totals.pct<99.95;
+  const badge=document.getElementById('ed-total-badge');
+  if(over){badge.className='alert alert-red';badge.textContent='⚠ Vượt 100% ('+fmtN(totals.pct,2)+'%)'}
+  else if(under){badge.className='alert alert-yellow';badge.textContent='⚠ Chưa đủ 100% ('+fmtN(totals.pct,2)+'%)'}
+  else{badge.className='alert alert-green';badge.textContent='✓ Tổng 100%'}
+
+  // Items table
+  const ingOptions=ingredients.map(i=>`<option value="${i.id}">${i.name}</option>`).join('');
+  document.getElementById('ed-tbody').innerHTML=formula.items.map((item,idx)=>{
+    const ing=getIngredient(item.ingredientId);
+    const kg=(item.percentage/100)*batchKg;
+    const cost=(ing?.price||0)*(item.percentage/100);
+    return`<tr>
+      <td>
+        <select class="inp" style="min-width:160px" onchange="updateFormulaItem(${idx},'ingredientId',this.value)">
+          ${ingredients.map(i=>`<option value="${i.id}"${i.id===item.ingredientId?' selected':''}>${i.name}</option>`).join('')}
+        </select>
+      </td>
+      <td class="text-right">
+        <input type="number" class="inp inp-num" style="width:90px" step="0.001"
+          value="${item.percentage}"
+          oninput="updateFormulaItem(${idx},'percentage',+this.value||0)"
+          onchange="updateFormulaItem(${idx},'percentage',+this.value||0)"/>
+      </td>
+      <td class="text-right num kg-col">${fmtN(kg,2)}</td>
+      <td class="text-right num" style="color:#64748b">${fmtP(ing?.price||0)}</td>
+      <td class="text-right num">${fmtP(cost*batchKg)}</td>
+      <td><button class="btn-icon" onclick="removeFormulaItem(${idx})" title="Xóa">🗑️</button></td>
+    </tr>`;
+  }).join('');
+
+  const ptot=totals.pct>100.05?'color:#ef4444':'color:#fde68a';
+  document.getElementById('ed-total-pct').innerHTML=`<span style="${ptot}">${fmtN(totals.pct,3)}%</span>`;
+  document.getElementById('ed-total-kg').textContent=fmtN(batchKg,0)+' kg';
+  document.getElementById('ed-total-cost').textContent=fmtP(totals.price*batchKg)+' đ';
+}
+
+function updateFormulaItem(idx,field,val){
+  const f=formulas.find(f=>f.id===selectedFormulaId);
+  if(f){f.items[idx]={...f.items[idx],[field]:val}}
+  renderEditor();
+  if(currentView==='phieu')renderPhieu();
+}
+
+function addFormulaItem(){
+  const f=formulas.find(f=>f.id===selectedFormulaId);
+  if(f&&ingredients.length){f.items.push({ingredientId:ingredients[0].id,percentage:0})}
+  renderEditor();
+}
+
+function removeFormulaItem(idx){
+  const f=formulas.find(f=>f.id===selectedFormulaId);
+  if(f){f.items.splice(idx,1)}
+  renderEditor();
+}
+
+function updateFormulaStandard(nutId,val){
+  const f=formulas.find(f=>f.id===selectedFormulaId);
+  if(f){if(!f.standards)f.standards={};f.standards[nutId]=val}
+  renderEditor();
+  if(currentView==='phieu')renderPhieu();
+}
+
+// ══════════════════════════════════════════════
+// INGREDIENTS TAB
+// ══════════════════════════════════════════════
+function renderIngredients(){
+  // Header
+  let hrow=`<th style="min-width:160px;position:sticky;left:0;background:#f8fafc;z-index:2">Tên nguyên liệu</th>
+    <th class="text-right" style="min-width:120px">Giá (đ/kg)</th>`;
+  nutrients.forEach(n=>{
+    hrow+=`<th class="text-right" style="min-width:90px">${n.name}<br><span style="font-weight:400;text-transform:none;opacity:.7;font-size:10px">(${n.unit})</span></th>`;
+  });
+  hrow+=`<th style="width:36px"></th>`;
+  document.getElementById('ing-header-row').innerHTML=hrow;
+
+  // Rows
+  document.getElementById('ing-tbody').innerHTML=ingredients.map((ing,idx)=>{
+    let row=`<tr style="background:${idx%2===0?'#fff':'#f8fafc'}">
+      <td style="position:sticky;left:0;z-index:1;background:inherit">
+        <input class="inp" value="${ing.name}" oninput="updateIng('${ing.id}','name',this.value)" style="min-width:140px;font-weight:600"/>
+      </td>
+      <td class="text-right">
+        <input type="number" class="inp inp-mono inp-num" style="width:120px" value="${ing.price}"
+          oninput="updateIng('${ing.id}','price',+this.value||0)"
+          onchange="updateIng('${ing.id}','price',+this.value||0)"/>
+      </td>`;
+    nutrients.forEach(n=>{
+      row+=`<td class="text-right">
+        <input type="number" step="0.001" class="inp inp-num" style="width:80px"
+          value="${ing.nutrients[n.id]||0}"
+          oninput="updateIng('${ing.id}','${n.id}',+this.value||0)"
+          onchange="updateIng('${ing.id}','${n.id}',+this.value||0)"/>
+      </td>`;
+    });
+    row+=`<td><button class="btn-icon" onclick="deleteIng('${ing.id}')" title="Xóa">🗑️</button></td></tr>`;
+    return row;
+  }).join('');
+}
+
+function addIngredient(){
+  const ing={id:uid(),name:'Nguyên liệu mới',price:0,nutrients:{}};
+  ingredients.push(ing);
+  renderIngredients();
+}
+
+function updateIng(id,field,val){
+  const ing=ingredients.find(i=>i.id===id);
+  if(!ing)return;
+  if(field==='name'||field==='price')ing[field]=val;
+  else ing.nutrients[field]=val;
+}
+
+function deleteIng(id){
+  if(!confirm('Xóa nguyên liệu này?'))return;
+  ingredients=ingredients.filter(i=>i.id!==id);
+  renderIngredients();
+}
+
+// ══════════════════════════════════════════════
+// NUTRIENTS TAB
+// ══════════════════════════════════════════════
+function renderNutrients(){
+  document.getElementById('nutrient-list').innerHTML=nutrients.map((n,idx)=>`
+    <div class="nutr-row">
+      <input class="inp" value="${n.name}" placeholder="Tên chỉ tiêu..."
+        oninput="updateNutrient(${idx},'name',this.value)"/>
+      <input class="inp" value="${n.unit}" placeholder="Đơn vị..."
+        oninput="updateNutrient(${idx},'unit',this.value)"/>
+      <input type="number" class="inp inp-blue inp-num" value="${n.standard??''}" placeholder="Chuẩn..."
+        oninput="updateNutrient(${idx},'standard',+this.value||undefined)"
+        onchange="updateNutrient(${idx},'standard',+this.value||undefined)"/>
+      <button class="btn-icon" onclick="deleteNutrient(${idx})">🗑️</button>
+    </div>
+  `).join('');
+}
+
+function addNutrient(){
+  nutrients.push({id:uid(),name:'',unit:'',standard:0});
+  renderNutrients();
+  renderIngredients();
+}
+
+function updateNutrient(idx,field,val){
+  nutrients[idx][field]=val;
+  renderAll();
+}
+
+function deleteNutrient(idx){
+  if(!confirm('Xóa chỉ tiêu này?'))return;
+  nutrients.splice(idx,1);
+  renderAll();
+}
+
+// ══════════════════════════════════════════════
+// PREMIX TAB
+// ══════════════════════════════════════════════
+function togglePremixForm(type){
+  const pp=document.getElementById('form-add-product');
+  const pc=document.getElementById('form-add-component');
+  if(type==='product'){
+    pp.style.display=pp.style.display==='none'?'block':'none';
+    pc.style.display='none';
+    if(pp.style.display==='block')setTimeout(()=>document.getElementById('new-prod-name').focus(),50);
+  } else if(type==='component'){
+    pc.style.display=pc.style.display==='none'?'block':'none';
+    pp.style.display='none';
+    if(pc.style.display==='block')setTimeout(()=>document.getElementById('new-comp-name').focus(),50);
+  } else {
+    pp.style.display='none';pc.style.display='none';
+  }
+}
+
+function confirmAddProduct(){
+  const name=document.getElementById('new-prod-name').value.trim();
+  const code=document.getElementById('new-prod-code').value.trim();
+  if(!name)return;
+  premixProducts.push({id:uid(),name,code:code||name.slice(0,6).toUpperCase(),values:{}});
+  document.getElementById('new-prod-name').value='';
+  document.getElementById('new-prod-code').value='';
+  togglePremixForm(null);
+  renderPremix();
+}
+
+function confirmAddComponent(){
+  const name=document.getElementById('new-comp-name').value.trim();
+  const unit=document.getElementById('new-comp-unit').value;
+  if(!name)return;
+  premixComponents.push({id:uid(),name,unit});
+  document.getElementById('new-comp-name').value='';
+  togglePremixForm(null);
+  renderPremix();
+}
+
+function renderPremix(){
+  document.getElementById('stat-products').textContent='📊 '+premixProducts.length+' loại premix';
+  document.getElementById('stat-components').textContent='🧪 '+premixComponents.length+' thành phần';
+
+  // THEAD
+  let thead=`<tr style="background:#581c87;color:#fff">
+    <th style="position:sticky;left:0;background:#3b0764;z-index:3;min-width:160px;text-align:left;padding:10px 12px;font-size:11px;text-transform:uppercase">Thành phần</th>
+    <th style="background:#3b0764;min-width:80px;text-align:center;padding:10px 12px;font-size:11px;text-transform:uppercase">Đơn vị</th>`;
+  premixProducts.forEach(p=>{
+    thead+=`<th class="premix-th" onclick="openModalProduct('${p.id}')" title="Click để sửa/xóa">
+      <div style="font-weight:700;font-size:13px">${p.name}</div>
+      <div class="premix-th-code">${p.code}</div>
+      <div class="premix-th-hint">✏️ Click để sửa/xóa</div>
+    </th>`;
+  });
+  thead+=`<th class="add-col-th" onclick="togglePremixForm('product')" title="Thêm loại premix mới">
+    <div style="font-size:20px">+</div>
+    <div style="font-size:10px;margin-top:2px">Thêm cột</div>
+  </th>`;
+  thead+=`</tr>`;
+  document.getElementById('premix-thead').innerHTML=thead;
+
+  // TBODY
+  let tbody='';
+  premixComponents.forEach((comp,cidx)=>{
+    const bg=cidx%2===0?'#fff':'#faf5ff';
+    tbody+=`<tr style="background:${bg}" onmouseenter="this.querySelector('.comp-edit-btn').style.opacity='1'"
+      onmouseleave="this.querySelector('.comp-edit-btn').style.opacity='0'">
+      <td style="position:sticky;left:0;background:${bg};z-index:2;padding:8px 12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+          <span style="font-weight:600;font-size:13px">${comp.name}</span>
+          <button class="comp-edit-btn" onclick="openModalComponent('${comp.id}')"
+            style="opacity:0;transition:.2s;background:none;border:none;cursor:pointer;color:#7c3aed;font-size:12px;padding:2px 4px"
+            title="Chỉnh sửa / Xóa thành phần">✏️</button>
+        </div>
+      </td>
+      <td style="text-align:center;padding:8px 12px">
+        <span style="font-size:11px;font-family:monospace;background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#475569">${comp.unit}</span>
+      </td>`;
+    premixProducts.forEach(p=>{
+      tbody+=`<td style="text-align:center;padding:6px 8px;border-left:1px solid #f1f5f9">
+        <input class="premix-inp" value="${p.values[comp.id]||''}" placeholder="—"
+          oninput="updatePremixValue('${p.id}','${comp.id}',this.value)"/>
+      </td>`;
+    });
+    tbody+=`<td style="border-left:1px solid #e2e8f0;background:#f8fafc"></td></tr>`;
+  });
+  document.getElementById('premix-tbody').innerHTML=tbody;
+}
+
+function updatePremixValue(prodId,compId,val){
+  const p=premixProducts.find(p=>p.id===prodId);
+  if(p)p.values[compId]=val;
+}
+
+// MODALS
+function openModalProduct(id){
+  const p=premixProducts.find(p=>p.id===id);
+  if(!p)return;
+  _modalProdId=id;
+  document.getElementById('modal-prod-name').value=p.name;
+  document.getElementById('modal-prod-code').value=p.code;
+  document.getElementById('modal-prod').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-prod-name').focus(),50);
+}
+
+function saveModalProduct(){
+  const p=premixProducts.find(p=>p.id===_modalProdId);
+  if(p){
+    p.name=document.getElementById('modal-prod-name').value;
+    p.code=document.getElementById('modal-prod-code').value;
+  }
+  closeModal('modal-prod');
+  renderPremix();
+}
+
+function deleteModalProduct(){
+  if(!confirm('Xóa loại premix này?'))return;
+  premixProducts=premixProducts.filter(p=>p.id!==_modalProdId);
+  closeModal('modal-prod');
+  renderPremix();
+}
+
+function openModalComponent(id){
+  const c=premixComponents.find(c=>c.id===id);
+  if(!c)return;
+  _modalCompId=id;
+  document.getElementById('modal-comp-name').value=c.name;
+  document.getElementById('modal-comp-unit').value=c.unit;
+  document.getElementById('modal-comp').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-comp-name').focus(),50);
+}
+
+function saveModalComponent(){
+  const c=premixComponents.find(c=>c.id===_modalCompId);
+  if(c){
+    c.name=document.getElementById('modal-comp-name').value;
+    c.unit=document.getElementById('modal-comp-unit').value;
+  }
+  closeModal('modal-comp');
+  renderPremix();
+}
+
+function deleteModalComponent(){
+  if(!confirm('Xóa thành phần này?'))return;
+  premixComponents=premixComponents.filter(c=>c.id!==_modalCompId);
+  closeModal('modal-comp');
+  renderPremix();
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+  _modalProdId=null;_modalCompId=null;
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+});
+
+// ══════════════════════════════════════════════
+// RENDER ALL
+// ══════════════════════════════════════════════
+function renderAll(){
+  renderFormulaList();
+  renderBatchPresets();
+  if(currentView==='phieu')renderPhieu();
+  else renderEditor();
+  if(currentTab==='ingredients')renderIngredients();
+  if(currentTab==='nutrients')renderNutrients();
+  if(currentTab==='premix')renderPremix();
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+function init(){
+  renderAll();
+  renderIngredients();
+  renderNutrients();
+  renderPremix();
+  updateClock();
+  setInterval(updateClock,1000);
+}
+
+init();
+</script>
+</body>
+</html>
